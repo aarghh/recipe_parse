@@ -1,9 +1,19 @@
+#### Pre-requisites
+
+# We require the uri gem to parse URIs
 require 'uri'
+# Use [nokogiri][no] to parse html
 require 'nokogiri'
+# Use open-uri to fetch the document specified by the URI
 require 'open-uri'
+# Use yaml to specify template files
 require 'yaml'
 require_relative 'classify_ingredient'
 
+# [no]: http://nokogiri.org/
+
+#### Public interface to Recipe class
+# This is where we define the Recipe class
 class Recipe
   
   attr_accessor :assoc
