@@ -2,6 +2,7 @@ require 'uri'
 require 'nokogiri'
 require 'open-uri'
 require 'yaml'
+require_relative 'classify_ingredient'
 
 class Recipe
   
@@ -16,7 +17,16 @@ class Recipe
     
     # find rule file for host
     u = URI::parse(url)
-    host = @@hosts[u.host]
+    if u.scheme == 'http' || u.scheme == 'https'
+      host = @@hosts[u.host]
+    elsif u.scheme == nil 
+      # Input uri looks like a file path
+      if host == nil
+        abort "Please specify a hostname to identify the parsing rules for the file"
+      end
+    else
+      abort "Scheme #{u.scheme} is not supported"
+    end
     yml = YAML::load(File.open('rules/' + host + '.yml'))
     doc = Nokogiri::HTML(open(url))
     
@@ -43,18 +53,28 @@ end
 class RecipeSection
   def initialize(doc, yml)
     @rule_name = self.class.to_s.underscore
+    @rule = yml[@rule_name]
   end
 end
+
 
 class Title < RecipeSection
   attr_reader :content
   def initialize(doc, yml)
     super(doc, yml)
-    @content = doc.css(yml[@rule_name])[0].content
+    if @rule 
+      @content = doc.css(@rule)[0].content
+    end
   end
   def to_s
-    content << "\n"
+    @content << "\n"
   end
+end
+
+class Author < RecipeSection
+end
+
+class Image < RecipeSection
 end
 
 class Ingredients < RecipeSection
@@ -64,8 +84,10 @@ class Ingredients < RecipeSection
   def initialize(doc, yml)
     super(doc, yml)
     @ing_list = []
-    doc.css(yml[@rule_name]).each do |ing| 
-      @ing_list.push ing.content.strip
+    if @rule
+        doc.css(@rule).each do |ing| 
+            @ing_list.push ing.content.strip
+        end
     end
   end
   
@@ -73,6 +95,10 @@ class Ingredients < RecipeSection
     s = ""
     @ing_list.each {|ing| s << ing << "\n" }
     s
+  end
+  
+  def each(&blk)
+    @ing_list.each(&blk)
   end
 
 end
@@ -84,8 +110,10 @@ class Preparation < RecipeSection
   def initialize(doc, yml)
     super(doc, yml)
     @steps = []
-    doc.css(yml[@rule_name]).each do |step| 
-      @steps.push step.content.strip 
+    if @rule
+        doc.css(@rule).each do |step| 
+            @steps.push step.content.strip 
+        end
     end
   end
 
@@ -117,14 +145,14 @@ class String
 
 end
 
-url = 'http://www.epicurious.com/articlesguides/bestof/toprecipes/bestpastarecipes/recipes/food/views/Lemon-Gnocchi-with-Spinach-and-Peas-240959'
-#url = '/Users/sujeet/Dropbox/code/recipe_parse/test/epicurious_sample.html'
-r = Recipe.new(url)
-puts "Recipe from epicurious"
-puts r.to_s
 
-url = 'http://www.bonappetit.com/recipes/quick-recipes/2010/08/curried_red_lentil_kohlrabi_and_couscous_salad'
-r = Recipe.new(url)
-puts "Recipe from bonappetit"
-puts r.to_s
+
+#url = 'http://www.epicurious.com/articlesguides/bestof/toprecipes/bestpastarecipes/recipes/food/views/Lemon-Gnocchi-with-Spinach-and-Peas-240959'
+url = '/Users/sujeet/Dropbox/code/recipe_parse/test/epicurious_sample.html'
+r = Recipe.new(url, 'epicurious')
+puts "Printing ingredients"
+r.ingredients.each do |ing|
+  ing_type, ing_match = classify_ingredient(ing)
+  puts ing + " - " + ing_type + ' - ' + ing_match
+end
 
