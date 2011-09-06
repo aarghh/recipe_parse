@@ -1,4 +1,6 @@
 title: 'div#headline h1.fn'
-ingredients:  'ul.ingredientsList li.ingredient' 
+author: 'p#recipe_author'
+ingredients:  
+    ingredient: 'ul.ingredientsList li.ingredient' 
 preparation: 'div#preparation p.instruction'
 

@@ -1,4 +1,5 @@
 title: 'div.introduction h1.fn'
+author: 'span.contributor span.name a'
 ingredients:  
     ingredient: 'ul.ingredients span.ingredient'
     quantity: 'span.quantity'

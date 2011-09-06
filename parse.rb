@@ -23,7 +23,7 @@ class Recipe
     'www.foodnetwork.com' => 'foodnetwork'
   }
   def initialize(url, host=nil)
-    @assoc = [:title, :ingredients, :preparation]
+    @assoc = [:title, :author, :ingredients, :preparation]
     
     # find rule file for host
     u = URI::parse(url)
@@ -82,6 +82,21 @@ class Title < RecipeSection
 end
 
 class Author < RecipeSection
+  attr_reader :authors
+  def initialize(doc, yml)
+    super(doc, yml)
+    @authors = []
+    if @rule
+      doc.css(@rule).each do |a|
+        @authors.push(a.content.strip)
+      end
+    end
+  end
+  def to_s
+    s = ''
+    @authors.each {|a| s = s + a + "\n"}
+    s
+  end
 end
 
 class Image < RecipeSection
