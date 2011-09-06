@@ -1,4 +1,8 @@
 title: 'div.introduction h1.fn'
-ingredients:  'ul.ingredients span.ingredient' 
+ingredients:  
+    ingredient: 'ul.ingredients span.ingredient'
+    quantity: 'span.quantity'
+    unit: 'span.unit'
+    name: 'span.name'
 preparation: 'li.step span.instructions'
 

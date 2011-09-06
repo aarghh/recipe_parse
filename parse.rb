@@ -8,7 +8,6 @@ require 'nokogiri'
 require 'open-uri'
 # Use yaml to specify template files
 require 'yaml'
-require_relative 'classify_ingredient'
 
 # [no]: http://nokogiri.org/
 
@@ -21,6 +20,7 @@ class Recipe
   @@hosts = {
     'www.epicurious.com' => 'epicurious',
     'www.bonappetit.com' => 'bonappetit',
+    'www.foodnetwork.com' => 'foodnetwork'
   }
   def initialize(url, host=nil)
     @assoc = [:title, :ingredients, :preparation]
@@ -73,7 +73,7 @@ class Title < RecipeSection
   def initialize(doc, yml)
     super(doc, yml)
     if @rule 
-      @content = doc.css(@rule)[0].content
+      @content = doc.css(@rule)[0].content.strip
     end
   end
   def to_s
@@ -94,16 +94,25 @@ class Ingredients < RecipeSection
   def initialize(doc, yml)
     super(doc, yml)
     @ing_list = []
+
     if @rule
-        doc.css(@rule).each do |ing| 
-            @ing_list.push ing.content.strip
+        doc.css(@rule['ingredient']).each do |ing_html| 
+          quantity = unit = name = ing_text = nil
+          quantity = ing_html.css(@rule['quantity'])[0].content.strip if @rule['quantity']
+          unit = ing_html.css(@rule['unit'])[0].content.strip if @rule['unit']
+          name = ing_html.css(@rule['name'])[0].content.strip if @rule['name']
+          ing_text = ing_html.content.strip if !(quantity || unit || name)
+          ing = Ingredient.new(quantity, unit, name, ing_text)
+          @ing_list.push ing
         end
     end
   end
   
   def to_s
     s = ""
-    @ing_list.each {|ing| s << ing << "\n" }
+    @ing_list.each do |ing| 
+      s << ing.to_s << "\n"
+    end
     s
   end
   
@@ -111,6 +120,24 @@ class Ingredients < RecipeSection
     @ing_list.each(&blk)
   end
 
+end
+
+class Ingredient
+  attr_accessor :quantity, :unit, :name, :text
+  def initialize(quantity, unit, name, text)
+    @quantity = quantity
+    @unit = unit
+    @name = name
+    @text = text
+  end
+  def to_s
+    s = ''
+    s += @quantity.to_s + ' ' if @quantity
+    s += @unit.to_s + ' ' if @unit
+    s += @name.to_s + ' ' if @name
+    s += @text.to_s + ' ' if @text
+    s
+  end
 end
 
 class Preparation < RecipeSection
@@ -154,7 +181,6 @@ class String
   end
 
 end
-
 
 
 
