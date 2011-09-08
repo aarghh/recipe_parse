@@ -8,6 +8,17 @@
 <body>
 <div id='container'>
   <div id="background"></div>
+  <div id="jump_to">
+    Jump To &hellip;
+    <div id="jump_wrapper">
+      <div id="jump_page">
+          <a class="source" href="classify_ingredient.html">classify_ingredient.rb</a>
+          <a class="source" href="example.html">example.rb</a>
+          <a class="source" href="parse.html">parse.rb</a>
+          <a class="source" href="test.html">test.rb</a>
+      </div>
+    </div>
+  </div>
   <table cellspacing=0 cellpadding=0>
   <thead>
     <tr>
@@ -68,7 +79,8 @@
         <p>Use yaml to specify template files</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre><span class="nb">require</span> <span class="s1">&#39;yaml&#39;</span></pre></div>
+        <div class='highlight'><pre><span class="nb">require</span> <span class="s1">&#39;yaml&#39;</span>
+<span class="n">require_relative</span> <span class="s1">&#39;classify_ingredient&#39;</span></pre></div>
       </td>
     </tr>
     <tr id='section-6'>
@@ -114,10 +126,9 @@
       </td>
       <td class=code>
         <div class='highlight'><pre>    <span class="n">u</span> <span class="o">=</span> <span class="no">URI</span><span class="o">::</span><span class="n">parse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-    <span class="n">host</span> <span class="o">=</span> <span class="vc">@@hosts</span><span class="o">[</span><span class="n">u</span><span class="o">.</span><span class="n">host</span><span class="o">]</span>
-    <span class="n">yml</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">::</span><span class="nb">load</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;rules/&#39;</span> <span class="o">+</span> <span class="n">host</span> <span class="o">+</span> <span class="s1">&#39;.yml&#39;</span><span class="p">))</span>
-    <span class="n">doc</span> <span class="o">=</span> <span class="no">Nokogiri</span><span class="o">::</span><span class="no">HTML</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
-    </pre></div>
+    <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="s1">&#39;http&#39;</span> <span class="o">||</span> <span class="n">u</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="s1">&#39;https&#39;</span>
+      <span class="n">host</span> <span class="o">=</span> <span class="vc">@@hosts</span><span class="o">[</span><span class="n">u</span><span class="o">.</span><span class="n">host</span><span class="o">]</span>
+    <span class="k">elsif</span> <span class="n">u</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="kp">nil</span> </pre></div>
       </td>
     </tr>
     <tr id='section-9'>
@@ -125,7 +136,27 @@
         <div class="pilwrap">
           <a class="pilcrow" href="#section-9">&#182;</a>
         </div>
+        <p>Input uri looks like a file path</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="k">if</span> <span class="n">host</span> <span class="o">==</span> <span class="kp">nil</span>
+        <span class="nb">abort</span> <span class="s2">&quot;Please specify a hostname to identify the parsing rules for the file&quot;</span>
+      <span class="k">end</span>
+    <span class="k">else</span>
+      <span class="nb">abort</span> <span class="s2">&quot;Scheme </span><span class="si">#{</span><span class="n">u</span><span class="o">.</span><span class="n">scheme</span><span class="si">}</span><span class="s2"> is not supported&quot;</span>
+    <span class="k">end</span>
+    <span class="n">yml</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">::</span><span class="nb">load</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;rules/&#39;</span> <span class="o">+</span> <span class="n">host</span> <span class="o">+</span> <span class="s1">&#39;.yml&#39;</span><span class="p">))</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="no">Nokogiri</span><span class="o">::</span><span class="no">HTML</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
+    </pre></div>
+      </td>
+    </tr>
+    <tr id='section-10'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-10">&#182;</a>
+        </div>
         <p>create associated objects and accessor methods for them</p>
+
       </td>
       <td class=code>
         <div class='highlight'><pre>    <span class="vi">@assoc</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="nb">name</span><span class="o">|</span>
@@ -150,18 +181,28 @@
 <span class="k">class</span> <span class="nc">RecipeSection</span>
   <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">yml</span><span class="p">)</span>
     <span class="vi">@rule_name</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">underscore</span>
+    <span class="vi">@rule</span> <span class="o">=</span> <span class="n">yml</span><span class="o">[</span><span class="vi">@rule_name</span><span class="o">]</span>
   <span class="k">end</span>
 <span class="k">end</span>
+
 
 <span class="k">class</span> <span class="nc">Title</span> <span class="o">&lt;</span> <span class="no">RecipeSection</span>
   <span class="kp">attr_reader</span> <span class="ss">:content</span>
   <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">yml</span><span class="p">)</span>
     <span class="k">super</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">yml</span><span class="p">)</span>
-    <span class="vi">@content</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="n">yml</span><span class="o">[</span><span class="vi">@rule_name</span><span class="o">]</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">content</span>
+    <span class="k">if</span> <span class="vi">@rule</span> 
+      <span class="vi">@content</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="vi">@rule</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">content</span>
+    <span class="k">end</span>
   <span class="k">end</span>
   <span class="k">def</span> <span class="nf">to_s</span>
-    <span class="n">content</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="vi">@content</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
   <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Author</span> <span class="o">&lt;</span> <span class="no">RecipeSection</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Image</span> <span class="o">&lt;</span> <span class="no">RecipeSection</span>
 <span class="k">end</span>
 
 <span class="k">class</span> <span class="nc">Ingredients</span> <span class="o">&lt;</span> <span class="no">RecipeSection</span>
@@ -171,8 +212,10 @@
   <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">yml</span><span class="p">)</span>
     <span class="k">super</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">yml</span><span class="p">)</span>
     <span class="vi">@ing_list</span> <span class="o">=</span> <span class="o">[]</span>
-    <span class="n">doc</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="n">yml</span><span class="o">[</span><span class="vi">@rule_name</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">ing</span><span class="o">|</span> 
-      <span class="vi">@ing_list</span><span class="o">.</span><span class="n">push</span> <span class="n">ing</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">strip</span>
+    <span class="k">if</span> <span class="vi">@rule</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="vi">@rule</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">ing</span><span class="o">|</span> 
+            <span class="vi">@ing_list</span><span class="o">.</span><span class="n">push</span> <span class="n">ing</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">strip</span>
+        <span class="k">end</span>
     <span class="k">end</span>
   <span class="k">end</span>
   
@@ -180,6 +223,10 @@
     <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="vi">@ing_list</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span><span class="o">|</span><span class="n">ing</span><span class="o">|</span> <span class="n">s</span> <span class="o">&lt;&lt;</span> <span class="n">ing</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="p">}</span>
     <span class="n">s</span>
+  <span class="k">end</span>
+  
+  <span class="k">def</span> <span class="nf">each</span><span class="p">(</span><span class="o">&amp;</span><span class="n">blk</span><span class="p">)</span>
+    <span class="vi">@ing_list</span><span class="o">.</span><span class="n">each</span><span class="p">(</span><span class="o">&amp;</span><span class="n">blk</span><span class="p">)</span>
   <span class="k">end</span>
 
 <span class="k">end</span>
@@ -191,8 +238,10 @@
   <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">yml</span><span class="p">)</span>
     <span class="k">super</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">yml</span><span class="p">)</span>
     <span class="vi">@steps</span> <span class="o">=</span> <span class="o">[]</span>
-    <span class="n">doc</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="n">yml</span><span class="o">[</span><span class="vi">@rule_name</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">step</span><span class="o">|</span> 
-      <span class="vi">@steps</span><span class="o">.</span><span class="n">push</span> <span class="n">step</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">strip</span> 
+    <span class="k">if</span> <span class="vi">@rule</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="vi">@rule</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">step</span><span class="o">|</span> 
+            <span class="vi">@steps</span><span class="o">.</span><span class="n">push</span> <span class="n">step</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">strip</span> 
+        <span class="k">end</span>
     <span class="k">end</span>
   <span class="k">end</span>
 
@@ -222,28 +271,7 @@
     <span class="k">end</span>
   <span class="k">end</span>
 
-<span class="k">end</span>
-
-<span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://www.epicurious.com/articlesguides/bestof/toprecipes/bestpastarecipes/recipes/food/views/Lemon-Gnocchi-with-Spinach-and-Peas-240959&#39;</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-10'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-10">&#182;</a>
-        </div>
-        <p>url = &lsquo;/Users/sujeet/Dropbox/code/recipe<em>parse/test/epicurious</em>sample.html&rsquo;</p>
-
-      </td>
-      <td class=code>
-        <div class='highlight'><pre><span class="n">r</span> <span class="o">=</span> <span class="no">Recipe</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-<span class="nb">puts</span> <span class="s2">&quot;Recipe from epicurious&quot;</span>
-<span class="nb">puts</span> <span class="n">r</span><span class="o">.</span><span class="n">to_s</span>
-
-<span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://www.bonappetit.com/recipes/quick-recipes/2010/08/curried_red_lentil_kohlrabi_and_couscous_salad&#39;</span>
-<span class="n">r</span> <span class="o">=</span> <span class="no">Recipe</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-<span class="nb">puts</span> <span class="s2">&quot;Recipe from bonappetit&quot;</span>
-<span class="nb">puts</span> <span class="n">r</span><span class="o">.</span><span class="n">to_s</span></pre></div>
+<span class="k">end</span></pre></div>
       </td>
     </tr>
   </table>
