@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>classify_ingredient.rb</title>
+  <link rel="stylesheet" href="http://jashkenas.github.com/docco/resources/docco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div id="jump_to">
+    Jump To &hellip;
+    <div id="jump_wrapper">
+      <div id="jump_page">
+          <a class="source" href="classify_ingredient.html">classify_ingredient.rb</a>
+          <a class="source" href="example.html">example.rb</a>
+          <a class="source" href="parse.html">parse.rb</a>
+          <a class="source" href="test.html">test.rb</a>
+      </div>
+    </div>
+  </div>
+  <table cellspacing=0 cellpadding=0>
+  <thead>
+    <tr>
+      <th class=docs><h1>classify_ingredient.rb</h1></th>
+      <th class=code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-1">&#182;</a>
+        </div>
+        
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="nb">require</span> <span class="s1">&#39;yaml&#39;</span>
+
+
+<span class="k">def</span> <span class="nf">classify_ingredient</span><span class="p">(</span><span class="n">ing</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-2">&#182;</a>
+        </div>
+        <p>Load the strings to match the various ingredient types</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre> <span class="n">ing_strings</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">::</span><span class="nb">load</span><span class="p">(</span> <span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;ingredients.yml&#39;</span><span class="p">)</span> <span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-3">&#182;</a>
+        </div>
+        <p>Run through the loaded hash, and construct regular expressions based 
+the ingredient names</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">ing_strings</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">|</span>
+
+    <span class="n">re_string</span> <span class="o">=</span> <span class="n">value</span><span class="o">[</span><span class="s1">&#39;strings&#39;</span><span class="o">].</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+    <span class="n">value</span><span class="o">[</span><span class="s1">&#39;re&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="no">Regexp</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\s</span><span class="s2">*(&quot;</span><span class="o">+</span><span class="n">re_string</span><span class="o">+</span><span class="s2">&quot;)(</span><span class="se">\s</span><span class="s2">+|$)&quot;</span><span class="p">,</span> <span class="kp">true</span><span class="p">)</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-4">&#182;</a>
+        </div>
+        <p>Other is a catch-all</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">ing_strings</span><span class="o">[</span><span class="s1">&#39;other&#39;</span><span class="o">][</span><span class="s1">&#39;re&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="no">Regexp</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-5">&#182;</a>
+        </div>
+        <p>Optional gets special treatment</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">ing_strings</span><span class="o">[</span><span class="s1">&#39;optional&#39;</span><span class="o">][</span><span class="s1">&#39;re&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="no">Regexp</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;(</span><span class="se">\s</span><span class="s2">+optional(:?</span><span class="se">\s</span><span class="s2">+|$))&quot;</span><span class="p">,</span> <span class="kp">true</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-6">&#182;</a>
+        </div>
+        <p>This is done per ingredient &ndash; so it needs to be separated from the previous 
+loop &ndash; which should be run only once on initialization</p>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">ing</span> <span class="o">=</span> <span class="n">ing</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/,/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+  <span class="n">ing</span> <span class="o">=</span> <span class="n">ing</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/\./</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+  <span class="n">ing_type</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+  <span class="n">ing_match</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+  <span class="n">ing_strings</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="o">|</span>
+    <span class="n">regexp</span> <span class="o">=</span> <span class="n">v</span><span class="o">[</span><span class="s1">&#39;re&#39;</span><span class="o">]</span>
+    <span class="k">if</span> <span class="n">ing</span> <span class="o">=~</span> <span class="n">regexp</span>
+      <span class="n">ing_type</span> <span class="o">=</span> <span class="n">v</span><span class="o">[</span><span class="s1">&#39;description&#39;</span><span class="o">]</span>
+      <span class="n">ing_match</span> <span class="o">=</span> <span class="no">Regexp</span><span class="o">.</span><span class="n">last_match</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+      <span class="k">break</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  <span class="k">return</span> <span class="n">ing_type</span><span class="p">,</span> <span class="n">ing_match</span>
+
+<span class="k">end</span></pre></div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>

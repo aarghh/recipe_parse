@@ -1,0 +1,42 @@
+birds: 
+    description: 'Meat(birds)'
+    strings: ['chicken', 'turkey', quail, hen, pigeon, squab, partridge]
+shellfish: 
+    description: Shellfish
+    strings: ['shrimps?', 'prawns?', squid, calamari, lobster, octopus, 'crabs?', langostine, abalone]
+fish: 
+    description: Fish
+    strings: [tuna, salmon, halibut, trout, swordfish, shark, 'sardines?', anchovy, anchovies, mackerel]
+meat: 
+    description: Meat
+    strings: [beef, lamb, goat, pork, veal, venison, boar, 'steaks?', bacon, lard, prosciutto, mutton]
+dairy: 
+    description: 'Eggs & Dairy'
+    strings: [milk, yogurt, 'curds?', cream, butter, cheese, ghee, buttermilk, 'eggs?']
+veg: 
+    description: Vegetables
+    strings: ['onions?', 'tomato(:?es)?', 'potato(:?es)?', squash, zucchini, broccoli, eggplant, beans, cabbage, cauliflower, chickpea, peas, carrot, beetroot, spinach, 'scallions?', pumpkin, celery, mushroom, 'bell(:?(-, \s))?peppers?']
+grain: 
+    description: Grains
+    strings: [rice, basmati, wheat, flour, couscous, quinoa]
+pasta: 
+    description: Pasta
+    strings: [pasta, fettucine, ziti, spaphetti, gnocchi, fusilli, lasagna, bucatini, lingune, tagliatelle, penne, macheroni, macaroni, farfalle, ravioli, tortellini, capellini, gemelli, orecchiette, rotelle, spiralini, strozzapreti, cannelloni, rigatoni, manicotti] 
+fruit: 
+    description: Fruits
+    strings: ['apples?', 'oranges?', 'grapes?', 'bananas?', 'limes?', 'lemons?', 'pears?']
+basics: 
+    description: 'Salt, pepper, sugar, oils'
+    strings: [sugar, salt, 'pepper(:?corns)?', '(:?(black|cayenne))?\s*pepper(:?corns)?', '(:?olive)?\s*oil', molasses, vinegar, mayonnaise, mustard, flour, cornstarch, water]
+herbs_spices: 
+    description: 'Herbs and Spices'
+    strings: [parsley, sage, rosemary, thyme, oregano, dill, cilantro, marjoram, chives, tarragon, basil, mint, bay leaf, bay leaves, lavender, ginger, garlic, 'jalapeno(:?(-|\s))?(:?peppers?)?', 'serrano(:?(-|\s))?(:?peppers?)?', 'chilly(:?(-|\s))?(:?peppers?)?', 'chile(:?(-|\s))?(:?peppers?)?', 'habanero(:?(-|\s))?(:?peppers?)?', lemongrass, cinnamon, cloves, cardamom, nutmeg, allspice, anise, fennel, cumin, coriander, paprika, turmeric, saffron, 'cardomo(:?m|n)', 'cinn?amm?o(:?n|m)', safron]
+nuts_dryfruits: 
+    description: 'Nuts & Dried fruits'
+    strings: ['almonds?', 'cashews?', 'cashew(:?(\s|-))?(:?nuts?)?', 'pecans?', 'walnuts?', 'hazelnuts?', 'macadamia(:?(\s|-))?nuts?', 'brazil(:?(\s|-))?nuts?', 'raisins?', 'currants?']
+optional: 
+    description: Optional
+    strings: [optional]
+other: 
+    description: Other
+    strings: ['']
